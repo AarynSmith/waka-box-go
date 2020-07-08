@@ -8,7 +8,13 @@ import (
 	"time"
 
 	"github.com/google/go-github/github"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	godotenv.Load("../.env")
+
+}
 
 func TestGenerateBarChart(t *testing.T) {
 	type args struct {
@@ -70,6 +76,7 @@ func TestGenerateBarChart(t *testing.T) {
 }
 
 func TestBox_GetStats(t *testing.T) {
+
 	wakaAPIKey := os.Getenv("WAKATIME_API_KEY")
 
 	ghToken := os.Getenv("GH_TOKEN")
@@ -85,6 +92,8 @@ func TestBox_GetStats(t *testing.T) {
 }
 
 func TestBox_Gist(t *testing.T) {
+	godotenv.Load("../.env")
+
 	wakaAPIKey := os.Getenv("WAKATIME_API_KEY")
 
 	ghToken := os.Getenv("GH_TOKEN")

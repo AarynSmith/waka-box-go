@@ -7,9 +7,12 @@ import (
 
 	wakabox "github.com/YouEclipse/waka-box-go/pkg"
 	"github.com/google/go-github/github"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+
 	wakaAPIKey := os.Getenv("WAKATIME_API_KEY")
 	ghToken := os.Getenv("GH_TOKEN")
 	ghUsername := os.Getenv("GH_USER")
