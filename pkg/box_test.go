@@ -13,7 +13,6 @@ import (
 
 func init() {
 	godotenv.Load("../.env")
-
 }
 
 func TestGenerateBarChart(t *testing.T) {
