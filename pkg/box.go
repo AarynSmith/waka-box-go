@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -11,12 +12,36 @@ import (
 	"github.com/google/go-github/github"
 )
 
+const maxLineLength = 53
+
+// BarStyle defines valid styles for the progress bar
+var BarStyle = map[string][]rune{
+	"SOLIDLT":    []rune(`░▏▎▍▌▋▊▉█`),
+	"SOLIDMD":    []rune(`▒▏▎▍▌▋▊▉█`),
+	"SOLIDDK":    []rune(`▓▏▎▍▌▋▊▉█`),
+	"EMPTY":      []rune(` ▏▎▍▌▋▊▉█`),
+	"UNDERSCORE": []rune(`▁▏▎▍▌▋▊▉█`),
+}
+
+// BoxStyle contains information for initalizing a gistbox style
+type BoxStyle struct {
+	BarStyle     string
+	BarLength    string
+	barLengthInt int
+	TimeStyle    string
+	maxLangLen   int
+	maxTimeLen   int
+}
+
+// Box contains a github and wakatime client and styling information for the gist
 type Box struct {
 	github   *github.Client
 	wakatime *wakatime.Client
+	style    BoxStyle
 }
 
-func NewBox(wakaAPIKey, ghUsername, ghToken string) *Box {
+// NewBox creates a box struct with appropriate wakatime and github information and gist styling information
+func NewBox(wakaAPIKey, ghUsername, ghToken string, style BoxStyle) *Box {
 	box := &Box{}
 
 	box.wakatime = wakatime.NewClient(wakaAPIKey, nil)
@@ -27,6 +52,17 @@ func NewBox(wakaAPIKey, ghUsername, ghToken string) *Box {
 	}
 	box.github = github.NewClient(tp.Client())
 
+	length, err := strconv.Atoi(style.BarLength)
+	if err != nil {
+		length = 21 //Default to 21
+	}
+	if style.BarStyle == "" {
+		style.BarStyle = "SOLIDLT" // Default to SOLIDLT
+	}
+	style.barLengthInt = length
+
+	box.style = style
+
 	return box
 }
 
@@ -36,21 +72,11 @@ func (b *Box) GetStats(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	max := 0
 
 	if languages := stats.Data.Languages; len(languages) > 0 {
-		lines := make([]string, 0)
-		for _, stat := range languages {
-			if max >= 5 {
-				break
-			}
-
-			line := pad(*stat.Name, " ", 9) + " " +
-				pad("🕓 "+*stat.Text, " ", 15) + " " +
-				GenerateBarChart(ctx, *stat.Percent, 21) + " " +
-				pad(fmt.Sprintf("%.1f%%", *stat.Percent), " ", 5)
-			lines = append(lines, line)
-			max++
+		lines, err := b.GenerateGistLines(ctx, languages)
+		if err != nil {
+			return nil, err
 		}
 		return lines, nil
 	}
@@ -63,7 +89,6 @@ func (b *Box) GetGist(ctx context.Context, id string) (*github.Gist, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return gist, nil
 }
 
@@ -73,11 +98,33 @@ func (b *Box) UpdateGist(ctx context.Context, id string, gist *github.Gist) erro
 	return err
 }
 
-// GenerateBarChart generates a bar chart with the given percent and size.
-func GenerateBarChart(ctx context.Context, percent float64, size int) string {
-	// using rune as for utf-8 encoding
-	var syms = []rune(`░▏▎▍▌▋▊▉█`)
+// ConstructLine formats a gist line from stat infomation
+func (b *Box) ConstructLine(ctx context.Context, stat wakatime.StatItem) string {
+	// line := pad(*stat.Name, " ", 10) + " " +
+	// 	pad("🕓 "+*stat.Text, " ", 15) + " " +
+	// 	GenerateBarChart(ctx, *stat.Percent, 21) + " " +
+	// 	pad(fmt.Sprintf("%.1f%%", *stat.Percent), " ", 5)
+	return fmt.Sprintf("%-*s🕓 %-*s%s%5.1f%%",
+		b.style.maxLangLen+1, *stat.Name,
+		b.style.maxTimeLen+1, *stat.Text,
+		GenerateBarChart(ctx, *stat.Percent, b.style.barLengthInt, b.style.BarStyle),
+		*stat.Percent)
+	// return pad(*stat.Name)
+}
 
+// GenerateBarChart generates a bar chart with the given percent and size.
+// Percent is a float64 from 0-100 representing the progress bar percentage
+// Size is an int representing the lenght of the progress bar in characters
+// BarType is a BarType representing the type of barchart: It can be one of the following:
+//    SOLIDLT SOLIDMD SOLIDDK: Block characters with a dotted background
+//    UNDERSCORE: Block characters with an line accross the boottom
+//    EMPTY: Block characters with an empty background
+func GenerateBarChart(ctx context.Context, percent float64, size int, barType string) string {
+	// using rune as for utf-8 encoding
+	syms := BarStyle[barType]
+	if len(syms) > 9 {
+		panic("No Syms")
+	}
 	frac := int(math.Floor((float64(size) * 8 * percent) / 100))
 	barsFull := int(math.Floor(float64(frac) / 8))
 
@@ -92,6 +139,34 @@ func GenerateBarChart(ctx context.Context, percent float64, size int) string {
 	return pad(bar, string(syms[0:1]), size)
 }
 
+// GenerateGistLines takes an slice of wakatime.StatItems, and generates a line for the gist.
+func (b *Box) GenerateGistLines(ctx context.Context, languages []wakatime.StatItem) ([]string, error) {
+	max := 0
+	lines := make([]string, 0)
+	for _, stat := range languages {
+		if b.style.TimeStyle == "SHORT" {
+			*stat.Text = convertDuration(*stat.Text)
+		}
+		if b.style.maxTimeLen < len(*stat.Text) {
+			b.style.maxTimeLen = len(*stat.Text)
+		}
+		if b.style.maxLangLen < len(*stat.Name) {
+			b.style.maxLangLen = len(*stat.Name)
+		}
+	}
+	if b.style.barLengthInt < 0 {
+		b.style.barLengthInt = maxLineLength - (b.style.maxLangLen + b.style.maxTimeLen + 10)
+	}
+	for _, stat := range languages {
+		if max >= 5 {
+			break
+		}
+		lines = append(lines, b.ConstructLine(ctx, stat))
+		max++
+	}
+	return lines, nil
+}
+
 func pad(s, pad string, targetLength int) string {
 	padding := targetLength - utf8.RuneCountInString(s)
 	if padding <= 0 {
@@ -99,4 +174,15 @@ func pad(s, pad string, targetLength int) string {
 	}
 
 	return s + strings.Repeat(pad, padding)
+}
+
+func convertDuration(t string) string {
+	r := strings.NewReplacer(
+		"hr", "h",
+		"min", "m",
+		"sec", "s",
+		" ", "",
+		"s", "",
+	)
+	return r.Replace(t)
 }

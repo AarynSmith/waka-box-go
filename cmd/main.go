@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -22,13 +23,25 @@ func main() {
 	ghUsername := os.Getenv("GH_USER")
 	gistID := os.Getenv("GIST_ID")
 
-	box := wakabox.NewBox(wakaAPIKey, ghUsername, ghToken)
+	style := wakabox.BoxStyle{
+		BarStyle:  os.Getenv("GIST_BARSTYLE"),
+		BarLength: os.Getenv("GIST_BARLENGTH"),
+		TimeStyle: os.Getenv("GIST_TIMESTYLE"),
+	}
+
+	dryRun := os.Getenv("DRY_RUN")
+
+	box := wakabox.NewBox(wakaAPIKey, ghUsername, ghToken, style)
 
 	lines, err := box.GetStats(context.Background())
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println(strings.Join(lines, "\n"))
+	if dryRun == "TRUE" {
+		return
+	}
 	ctx := context.Background()
 
 	filename := "📊 Weekly development breakdown"
