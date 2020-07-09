@@ -1,10 +1,12 @@
+#
+
 <p align="center">
   <img width="400" src="https://user-images.githubusercontent.com/8252317/83985147-9afb2800-a96a-11ea-9841-eec3a1f61d75.png">
   <h3 align="center">waka-box-go</h3>
   <p align="center">📊 Update a pinned gist to contain your weekly WakaTime stats. </p>
   <p align="center">  A Golang implementation, see the original version  <a href="https://github.com/matchai/waka-box">waka-box</a>
    <p align="center">
-    <a href="https://github.com/YouEclipse/waka-box-go/workflows/Update%20gist%20with%20WakaTime%20stats/badge.svg?branch=master"><img src="https://github.com/YouEclipse/waka-box-go/workflows/Update%20gist%20with%20WakaTime%20stats/badge.svg?branch=master" alt="Update gist with WakaTime stats"></a>
+    <a href="https://github.com/AarynSmith/waka-box-go/workflows/Update%20gist%20with%20WakaTime%20stats/badge.svg?branch=master"><img src="https://github.com/AarynSmith/waka-box-go/workflows/Update%20gist%20with%20WakaTime%20stats/badge.svg?branch=master" alt="Update gist with WakaTime stats"></a>
   </p>
 </p>
 
@@ -12,17 +14,17 @@
 
 English | [简体中文](./README_zh.md)
 
-> 📌✨ For more pinned-gist projects like this one, check out: https://github.com/matchai/awesome-pinned-gists
+> 📌✨ For more pinned-gist projects like this one, check out: [https://github.com/matchai/awesome-pinned-gists](https://github.com/matchai/awesome-pinned-gists)
 
 ## 💻 Setup
 
 ### 🎒 Prep work
 
-1. Create a new public GitHub Gist with name `📊 Weekly development breakdown` (https://gist.github.com/)
-1. Create a token with the `gist` scope and copy it. (https://github.com/settings/tokens/new)
-1. Create a WakaTime account (https://wakatime.com/signup)
-1. In your WakaTime profile settings (https://wakatime.com/settings/profile) ensure `Display coding activity publicly` and `Display languages, editors, operating systems publicly` are checked.
-1. In your account settings, copy the existing WakaTime API Key (https://wakatime.com/settings/api-key)
+1. Create a new public GitHub Gist with name `📊 Weekly development breakdown` ([https://gist.github.com/](https://gist.github.com/))
+1. Create a token with the `gist` scope and copy it. ([https://github.com/settings/tokens/new](https://github.com/settings/tokens/new))
+1. Create a WakaTime account ([https://wakatime.com/signup](https://wakatime.com/signup))
+1. In your WakaTime profile settings ([https://wakatime.com/settings/profile](https://wakatime.com/settings/profile)) ensure `Display coding activity publicly` and `Display languages, editors, operating systems publicly` are checked.
+1. In your account settings, copy the existing WakaTime API Key ([https://wakatime.com/settings/api-key](https://wakatime.com/settings/api-key))
 
 ### 🚀 Project setup
 
