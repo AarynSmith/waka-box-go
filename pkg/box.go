@@ -12,6 +12,8 @@ import (
 	"github.com/google/go-github/github"
 )
 
+// maxLineLength is the visible number of characters in a pinned gist box
+// (accounting for the clock emoji)
 const maxLineLength = 53
 
 // BarStyle defines valid styles for the progress bar
