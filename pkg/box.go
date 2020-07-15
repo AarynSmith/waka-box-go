@@ -98,7 +98,10 @@ func (b *Box) GetGist(ctx context.Context, id string) (*github.Gist, error) {
 // UpdateGist updates the gist.
 func (b *Box) UpdateGist(ctx context.Context, id string, gist *github.Gist) error {
 	_, _, err := b.github.Gists.Edit(ctx, id, gist)
-	return fmt.Errorf("wakabox.UpdateGist: Error updating gist: %w", err)
+	if err != nil {
+		return fmt.Errorf("wakabox.UpdateGist: Error updating gist: %w", err)
+	}
+	return nil
 }
 
 // GenerateGistLines takes an slice of wakatime.StatItems, and generates a line for the gist.
