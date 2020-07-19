@@ -1,0 +1,12 @@
+# github.com/YouEclipse/wakatime-go v0.0.0-20200606100124-b1a24ffc7535
+## explicit
+github.com/YouEclipse/wakatime-go/pkg
+# github.com/google/go-github v17.0.0+incompatible
+## explicit
+github.com/google/go-github/github
+# github.com/google/go-querystring v1.0.0
+## explicit
+github.com/google/go-querystring/query
+# github.com/joho/godotenv v1.3.0
+## explicit
+github.com/joho/godotenv
