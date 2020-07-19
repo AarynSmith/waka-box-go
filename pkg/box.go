@@ -74,9 +74,6 @@ func (b *Box) GetStats(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("wakabox.GetStats: Error getting Current Stats: %w", err)
 	}
-	if err != nil && err.Error()[:38] == "response code expects 200, but got 202" {
-		return nil, fmt.Errorf("wakabox.GetStats: Got 202 response. Error getting Current Stats: %w", err)
-	}
 
 	if languages := stats.Data.Languages; len(languages) > 0 {
 		lines, err := b.GenerateGistLines(ctx, languages)
