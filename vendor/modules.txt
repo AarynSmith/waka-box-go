@@ -1,6 +1,6 @@
-# github.com/YouEclipse/wakatime-go v0.0.0-20200606100124-b1a24ffc7535
+# github.com/YouEclipse/wakatime-go v0.1.1
 ## explicit
-github.com/YouEclipse/wakatime-go/pkg
+github.com/YouEclipse/wakatime-go/pkg/wakatime
 # github.com/google/go-github v17.0.0+incompatible
 ## explicit
 github.com/google/go-github/github
