@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	godotenv.Load("../.env")
+	godotenv.Load("../../.env")
 }
 
 func TestGenerateBarChart(t *testing.T) {
@@ -121,7 +121,6 @@ func TestBox_GetStats(t *testing.T) {
 }
 
 func TestBox_Gist(t *testing.T) {
-	godotenv.Load("../.env")
 
 	wakaAPIKey := os.Getenv("WAKATIME_API_KEY")
 
