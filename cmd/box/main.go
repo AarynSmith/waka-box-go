@@ -40,8 +40,6 @@ func main() {
 		TimeStyle: os.Getenv("GIST_TIMESTYLE"),
 	}
 
-	dryRun := os.Getenv("DRY_RUN")
-
 	box := wakabox.NewBox(wakaAPIKey, ghUsername, ghToken, style)
 
 	ctx := context.Background()
